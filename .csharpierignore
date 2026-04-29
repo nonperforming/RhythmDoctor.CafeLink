@@ -1,0 +1,6 @@
+.idea/*
+.run/*
+RhythmDoctor.CafeLink/.idea/*
+RhythmDoctor.CafeLink/Usings.cs
+RhythmDoctor.CafeLink/libs/*
+RhythmDoctor.CafeLink/RhythmDoctor.CafeLink.csproj

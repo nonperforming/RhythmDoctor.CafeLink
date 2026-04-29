@@ -1,0 +1,22 @@
+name: Check Formatting
+on:
+  push:
+    paths-ignore:
+      - "**"
+      - "!**.cs"
+
+jobs:
+  check-formatting:
+    name: Check Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+        with:
+          submodules: recursive
+
+      - name: Restore tools
+        run: dotnet tool restore
+
+      - name: Check formatting
+        run: dotnet tool run dotnet-csharpier --check .

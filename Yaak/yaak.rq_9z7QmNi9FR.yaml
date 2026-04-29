@@ -1,0 +1,42 @@
+type: http_request
+model: http_request
+id: rq_9z7QmNi9FR
+createdAt: 2026-04-27T08:03:44.099434100
+updatedAt: 2026-05-02T09:17:34.437833300
+workspaceId: wk_wxuHjpZQX4
+folderId: fl_h3mtcgseh7
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: ''
+headers:
+- enabled: true
+  name: Content-Length
+  value: '0'
+  id: Wptu3DCupm
+- enabled: true
+  name: ''
+  value: ''
+  id: RgjD5daEXZ
+method: POST
+name: URI (cafe)
+sortPriority: -1777276169478.0
+url: http://127.0.0.1:2615/play
+urlParameters:
+- enabled: true
+  name: uri
+  value: cafe://rsFPbF2w
+  id: c5yg3Vzvyf
+- enabled: false
+  name: transient
+  value: ''
+  id: i8mYHQH6zE
+- enabled: false
+  name: 2p
+  value: ''
+  id: h474YKtBQh
+- enabled: true
+  name: ''
+  value: ''
+  id: PXbeFcYQ79

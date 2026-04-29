@@ -1,0 +1,39 @@
+name: Release Build
+on: workflow_dispatch
+
+jobs:
+  build:
+    name: Build Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.2
+        with:
+          submodules: recursive
+
+      - name: Cache
+        uses: actions/cache@v5.0.5
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget
+
+      - name: Build client
+        run: dotnet publish RhythmDoctor.CafeLink --configuration Release --output build --verbosity normal
+
+      # https://github.com/ebkr/r2modmanPlus/wiki/Structuring-your-Thunderstore-package#bepinex
+      # TODO: Consider using tag name or pull version from .csproj
+      - name: Organize plugin files
+        run: |
+          cd build
+          mkdir --parents plugins/io.github.nonperforming.cafelink
+          mv io.github.nonperforming.cafelink.dll plugins/io.github.nonperforming.cafelink
+          zip --recurse-paths ../io.github.nonperforming.cafelink.zip plugins
+
+      - name: Upload client plugin
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          path: io.github.nonperforming.cafelink.zip
+          if-no-files-found: error
+          archive: false # otherwise GitHub will zip the zip
+
+        # When we get on Thunderstore, upload the artifact zip here.

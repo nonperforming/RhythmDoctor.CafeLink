@@ -1,0 +1,22 @@
+repos:
+  - repo: local
+    hooks:
+      - id: dotnet-tool-restore
+        name: Restore .NET tools
+        entry: dotnet tool restore
+        language: system
+        always_run: true
+        pass_filenames: false
+        stages:
+          - pre-commit
+          - pre-push
+          - post-checkout
+          - post-rewrite
+        description: Restore the .NET tools listed at .config/dotnet-tools.json.
+      - id: csharpier
+        name: Format using CSharpier
+        entry: dotnet tool run dotnet-csharpier
+        language: system
+        types:
+          - c#
+        description: CSharpier is an opinionated C# formatter inspired by Prettier.

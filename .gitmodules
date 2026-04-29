@@ -1,0 +1,3 @@
+[submodule "RhythmDoctor.CafeLink/libs/Pulse"]
+	path = RhythmDoctor.CafeLink/libs/Pulse
+	url = https://github.com/nonperforming/Pulse

@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="RhythmDoctor.CafeLink/libs/Pulse/PulseLib.csproj" />
+  <Project Path="RhythmDoctor.CafeLink/RhythmDoctor.CafeLink.csproj" />
+</Solution>

@@ -1,0 +1,23 @@
+type: workspace
+model: workspace
+id: wk_wxuHjpZQX4
+createdAt: 2026-04-27T07:49:24.422803900
+updatedAt: 2026-04-27T09:12:39.926792100
+authentication: {}
+authenticationType: null
+description: ''
+headers:
+- enabled: true
+  name: Accept
+  value: application/json
+  id: 2yhJcDTxNu
+- enabled: true
+  name: ''
+  value: ''
+  id: JJWPfI94Xc
+name: RhythmDoctor.CafeLink
+encryptionKeyChallenge: null
+settingValidateCertificates: true
+settingFollowRedirects: false
+settingRequestTimeout: 1000
+settingDnsOverrides: []

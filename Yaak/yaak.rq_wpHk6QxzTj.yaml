@@ -1,0 +1,42 @@
+type: http_request
+model: http_request
+id: rq_wpHk6QxzTj
+createdAt: 2026-04-27T08:47:38.131645600
+updatedAt: 2026-05-02T09:17:39.208850300
+workspaceId: wk_wxuHjpZQX4
+folderId: fl_h3mtcgseh7
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: ''
+headers:
+- enabled: true
+  name: Content-Length
+  value: '0'
+  id: vGpqQ2S7zz
+- enabled: true
+  name: ''
+  value: ''
+  id: pswKv0RpKN
+method: POST
+name: URI (https)
+sortPriority: -1184850779652.0
+url: http://127.0.0.1:2615/play
+urlParameters:
+- enabled: true
+  name: uri
+  value: https://rhythm.cafe/levels/rsFPbF2w/download/
+  id: KiR7RvihJ8
+- enabled: false
+  name: transient
+  value: ''
+  id: FanVbSu85v
+- enabled: false
+  name: 2p
+  value: ''
+  id: wt8szSeTYx
+- enabled: true
+  name: ''
+  value: ''
+  id: f5MWJaacXJ

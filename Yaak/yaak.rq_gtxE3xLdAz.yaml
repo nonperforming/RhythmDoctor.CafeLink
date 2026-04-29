@@ -1,0 +1,22 @@
+type: http_request
+model: http_request
+id: rq_gtxE3xLdAz
+createdAt: 2026-04-27T07:49:29.480962800
+updatedAt: 2026-04-29T10:54:36.351883200
+workspaceId: wk_wxuHjpZQX4
+folderId: null
+authentication: {}
+authenticationType: null
+body: {}
+bodyType: null
+description: ''
+headers:
+- enabled: true
+  name: ''
+  value: ''
+  id: i8UCxCGKNg
+method: GET
+name: Status
+sortPriority: 1000.0
+url: http://127.0.0.1:2615/status
+urlParameters: []

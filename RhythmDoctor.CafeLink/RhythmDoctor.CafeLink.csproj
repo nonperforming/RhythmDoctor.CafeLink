@@ -1,0 +1,108 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <AssemblyName>io.github.nonperforming.cafelink</AssemblyName>
+    <Product>RhythmDoctor.CafeLink</Product>
+    <Description>Additional support for rhythm.cafe</Description>
+    <Version>1.0.0</Version>
+    <LangVersion>latest</LangVersion>
+    <RestoreAdditionalProjectSources>
+      https://api.nuget.org/v3/index.json;
+      https://nuget.bepinex.dev/v3/index.json;
+      https://nuget.samboy.dev/v3/index.json
+    </RestoreAdditionalProjectSources>
+    <RootNamespace>RhythmDoctor.CafeLink</RootNamespace>
+    <Nullable>enable</Nullable>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <!-- MSB3277: Found conflicts between different versions of "System.IO.Compression" that could not be resolved. -->
+  <!-- HARMONIZE002 : Merging the same data fields from multiple attributes has undefined behavior -->
+  <PropertyGroup>
+    <MSBuildWarningsAsMessages>
+      $(MSBuildWarningsAsMessages);MSB3277;HARMONIZE002
+    </MSBuildWarningsAsMessages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="libs\**" />
+    <EmbeddedResource Remove="libs\**" />
+    <None Remove="libs\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
+    <PackageReference
+      Include="BepInEx.AssemblyPublicizer.MSBuild"
+      Version="0.4.2"
+      PrivateAssets="all"
+    />
+    <PackageReference Include="BepInEx.Core" Version="5.*" />
+    <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" />
+    <PackageReference Include="NAudio" Version="2.3.0" />
+    <PackageReference Include="NAudio.Vorbis" Version="1.5.0" />
+    <PackageReference Include="Nitrox.Discovery.MSBuild" Version="0.1.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="PolySharp" Version="1.15.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Roslynator.Analyzers" Version="*">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Roslynator.CodeFixes" Version="*">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="UnityEngine.Modules" Version="6000.3.10" IncludeAssets="compile" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
+    <PackageReference
+      Include="Microsoft.NETFramework.ReferenceAssemblies"
+      Version="1.0.2"
+      PrivateAssets="all"
+    />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="libs\Pulse\PulseLib.csproj" />
+  </ItemGroup>
+
+  <Target
+    Name="FindGameAndIncludeReferences"
+    BeforeTargets="ResolveAssemblyReferences"
+    Condition="'$(_NitroxDiscovery_TaskAssembly)' != ''"
+  >
+    <PropertyGroup>
+      <GameName>Rhythm Doctor</GameName>
+    </PropertyGroup>
+    <DiscoverGame GameName="$(GameName)">
+      <Output TaskParameter="GamePath" PropertyName="GameDir" />
+    </DiscoverGame>
+    <PropertyGroup>
+      <GameDir>$(GameDir)\Rhythm Doctor_Data\Managed\</GameDir>
+      <GameDir Condition="'$(GameDir)' == '\Rhythm Doctor_Data\Managed\'">libs\</GameDir>
+    </PropertyGroup>
+    <Message Importance="high" Text="Using libraries at '$(GameDir)'" />
+    <ItemGroup>
+      <Reference Include="Assembly-CSharp" Publicize="true">
+        <HintPath>$(GameDir)\Assembly-CSharp.dll</HintPath>
+      </Reference>
+      <Reference Include="Assembly-CSharp-firstpass">
+        <HintPath>$(GameDir)\Assembly-CSharp-firstpass.dll</HintPath>
+      </Reference>
+      <Reference Include="Newtonsoft.Json">
+        <HintPath>$(GameDir)\Newtonsoft.Json.dll</HintPath>
+      </Reference>
+      <Reference Include="UnityEngine.UI">
+        <HintPath>$(GameDir)\UnityEngine.UI.dll</HintPath>
+      </Reference>
+      <Reference Include="RDTools">
+        <HintPath>$(GameDir)\RDTools.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+  </Target>
+</Project>

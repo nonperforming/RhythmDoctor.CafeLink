@@ -1,8 +1,11 @@
-﻿namespace RhythmDoctor.CafeLink.Server.Handlers;
+﻿using System.Net.Http;
+
+namespace RhythmDoctor.CafeLink.Server.Handlers;
 
 internal class PlayHandler : IHandler
 {
   public string Endpoint => "play";
+  public HttpMethod AcceptedMethod => HttpMethod.Post;
 
   public IResponse HandleRequest(NameValueCollection parameters)
   {

@@ -1,4 +1,6 @@
-﻿namespace RhythmDoctor.CafeLink.Server.Interfaces;
+﻿using System.Net.Http;
+
+namespace RhythmDoctor.CafeLink.Server.Interfaces;
 
 public interface IResponse
 {

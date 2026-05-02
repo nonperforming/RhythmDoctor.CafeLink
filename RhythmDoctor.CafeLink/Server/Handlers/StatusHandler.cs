@@ -1,10 +1,12 @@
-﻿using System.Text;
+﻿using System.Net.Http;
+using System.Text;
 
 namespace RhythmDoctor.CafeLink.Server.Handlers;
 
 internal class StatusHandler : IHandler
 {
   public string Endpoint => "status";
+  public HttpMethod AcceptedMethod => HttpMethod.Get;
 
   public IResponse HandleRequest(NameValueCollection parameters)
   {

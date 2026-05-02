@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Net.Http;
+using System.Text;
 
 namespace RhythmDoctor.CafeLink.Server;
 
@@ -98,9 +99,17 @@ internal class Server
     }
 
     Plugin.Logger.LogInfo($"[{nameof(Server)}] Handling '{endpoint}' request...");
-    response = _handlers.TryGetValue(endpoint, out IHandler handler)
-      ? handler.HandleRequest(httpContext.Request.QueryString)
-      : new ErrorResponse(HttpStatusCode.NotFound, "Unknown endpoint.");
+    if (_handlers.TryGetValue(endpoint, out IHandler handler))
+    {
+      response =
+        handler.AcceptedMethod.Method != httpRequest.HttpMethod
+          ? new ErrorResponse(HttpStatusCode.MethodNotAllowed, $"Expected {handler.AcceptedMethod.Method} method.")
+          : handler.HandleRequest(httpContext.Request.QueryString);
+    }
+    else
+    {
+      response = new ErrorResponse(HttpStatusCode.NotFound, "Unknown endpoint.");
+    }
 
     SendResponseWithDataAndGetReadyForNextRequest:
     IReadOnlyCollection<byte> data = response.Data;

@@ -25,9 +25,6 @@ internal class PlayHandler : IHandler
         "Currently processing prior request to play level transiently."
       );
 
-    if (Plugin.Status.HasFlag(BusyStatus.CleaningUpTransientPlay) && transient)
-      return new ErrorResponse(HttpStatusCode.ServiceUnavailable, "Currently cleaning up.");
-
     if (string.IsNullOrWhiteSpace(uri))
       return new ErrorResponse(HttpStatusCode.BadRequest, "No URI given.");
 

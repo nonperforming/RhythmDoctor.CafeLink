@@ -2,7 +2,7 @@ type: http_request
 model: http_request
 id: rq_wpHk6QxzTj
 createdAt: 2026-04-27T08:47:38.131645600
-updatedAt: 2026-05-02T09:17:39.208850300
+updatedAt: 2026-05-02T23:42:05.620621
 workspaceId: wk_wxuHjpZQX4
 folderId: fl_h3mtcgseh7
 authentication: {}
@@ -22,11 +22,11 @@ headers:
 method: POST
 name: URI (https)
 sortPriority: -1184850779652.0
-url: http://127.0.0.1:2615/play
+url: ${[ base_url ]}/play
 urlParameters:
 - enabled: true
   name: uri
-  value: https://rhythm.cafe/levels/rsFPbF2w/download/
+  value: ${[ cafe_url ]}/levels/${[ test_level_2_id ]}/download/
   id: KiR7RvihJ8
 - enabled: false
   name: transient
@@ -39,4 +39,4 @@ urlParameters:
 - enabled: true
   name: ''
   value: ''
-  id: f5MWJaacXJ
+  id: kjeXs8a9Kc

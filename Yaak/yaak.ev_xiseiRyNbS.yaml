@@ -1,0 +1,30 @@
+type: environment
+model: environment
+id: ev_xiseiRyNbS
+workspaceId: wk_wxuHjpZQX4
+createdAt: 2026-05-02T23:25:57.397251
+updatedAt: 2026-05-02T23:42:18.620442
+name: Global Variables
+public: true
+base: true
+parentModel: workspace
+parentId: null
+variables:
+- enabled: true
+  name: test_level_1_id
+  value: rcPNGKVz
+  id: di8eF8Ah2t
+- enabled: true
+  name: test_level_2_id
+  value: rsFPbF2w
+  id: fXkWQ8JJHn
+- enabled: true
+  name: base_url
+  value: http://127.0.0.1:2615
+  id: wc34Ab2z6T
+- enabled: true
+  name: cafe_url
+  value: https://rhythm.cafe
+  id: EFdfSiYIWc
+color: null
+sortPriority: 0.0

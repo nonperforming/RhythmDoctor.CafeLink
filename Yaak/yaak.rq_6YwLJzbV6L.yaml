@@ -2,7 +2,7 @@ type: http_request
 model: http_request
 id: rq_6YwLJzbV6L
 createdAt: 2026-04-29T10:54:44.547783500
-updatedAt: 2026-05-02T09:17:41.464153
+updatedAt: 2026-05-02T23:42:14.416040
 workspaceId: wk_wxuHjpZQX4
 folderId: fl_eBc8DkHQCh
 authentication: {}
@@ -20,19 +20,19 @@ headers:
   value: ''
   id: RgjD5daEXZ
 method: POST
-name: URI (cafe)
-sortPriority: 0.0
-url: http://127.0.0.1:2615/import
+name: URI (https)
+sortPriority: 1000.0
+url: ${[ base_url ]}/import
 urlParameters:
 - enabled: true
   name: uri
-  value: cafe://rcPNGKVz
+  value: ${[ cafe_url ]}/levels/${[ test_level_1_id ]}/download/
   id: yvtVgMqaiz
 - enabled: true
   name: uri
-  value: cafe://rsFPbF2w
+  value: ${[ cafe_url ]}/levels/${[ test_level_2_id ]}/download/
   id: c5yg3Vzvyf
 - enabled: true
   name: ''
   value: ''
-  id: iIIkYwTc7t
+  id: Aytbu5CfhX

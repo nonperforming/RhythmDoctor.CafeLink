@@ -1,10 +1,10 @@
 type: http_request
 model: http_request
-id: rq_9z7QmNi9FR
-createdAt: 2026-04-27T08:03:44.099434100
-updatedAt: 2026-05-02T23:42:07.772883
+id: rq_faKfC3Rtim
+createdAt: 2026-05-02T23:32:19.039789
+updatedAt: 2026-05-02T23:42:03.130565
 workspaceId: wk_wxuHjpZQX4
-folderId: fl_h3mtcgseh7
+folderId: fl_eBc8DkHQCh
 authentication: {}
 authenticationType: null
 body: {}
@@ -21,22 +21,18 @@ headers:
   id: RgjD5daEXZ
 method: POST
 name: URI (cafe)
-sortPriority: -1777276169478.0
-url: ${[ base_url ]}/play
+sortPriority: 0.0
+url: ${[ base_url ]}/import
 urlParameters:
+- enabled: true
+  name: uri
+  value: cafe://${[ test_level_1_id ]}
+  id: yvtVgMqaiz
 - enabled: true
   name: uri
   value: cafe://${[ test_level_2_id ]}
   id: c5yg3Vzvyf
-- enabled: false
-  name: transient
-  value: ''
-  id: i8mYHQH6zE
-- enabled: false
-  name: 2p
-  value: ''
-  id: h474YKtBQh
 - enabled: true
   name: ''
   value: ''
-  id: MFRhdgkcdD
+  id: Td0fYpDBWK

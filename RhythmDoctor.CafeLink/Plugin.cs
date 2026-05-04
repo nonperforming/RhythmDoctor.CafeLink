@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
@@ -88,6 +89,60 @@ public class Plugin : BaseUnityPlugin
 
   internal static async Task PlayTransient(string uri, bool twoPlayer)
   {
+    Logger.LogInfo($"[{nameof(Plugin)}] Playing {uri} transiently (2P: {twoPlayer})...");
+
+    using HttpClient client = new();
+    client.DefaultRequestHeaders.UserAgent.Add(
+      ProductInfoHeaderValue.Parse($"RhythmDoctor.CafeLink/{MyPluginInfo.PLUGIN_VERSION}")
+    );
+
+    if (uri.StartsWith("cafe://"))
+    {
+      try
+      {
+        string id = uri.Split('/').Last();
+        Logger.LogInfo($"[{nameof(Plugin)}] Getting level data of cafe level {id}...");
+        LevelData? levelData = await Cafe.GetLevelData(id);
+
+        if (!levelData.HasValue)
+        {
+          Logger.LogError($"[{nameof(Plugin)}] Could not get level data (is level ID valid?)");
+          throw new ArgumentException("Could not get level data");
+        }
+
+        if (TryFindLevelWithHash(levelData.Value.RDMD5, out CustomLevelData? customLevelData))
+        {
+          Logger.LogWarning($"[{nameof(Plugin)}] Found already imported level, going to that instead");
+
+          _ = Task.Run(CleanupTransientPlay);
+#if DEBUG
+          if (Configuration.UseVirtualFilesystem.Value)
+          {
+            Logger.LogDebug($"[{nameof(Plugin)}] Waiting for VFS to cleanup...");
+            await Task.Run(async () =>
+            {
+              while (Status.HasFlag(BusyStatus.CleaningUpTransientPlay))
+              {
+                await Task.Delay(500);
+              }
+            });
+            Logger.LogDebug($"[{nameof(Plugin)}] Cleaned up!");
+          }
+#endif
+          scnBaseExtensions.GoToLevelWithCustomLevelData(customLevelData, twoPlayer);
+          scnBase.currentLevelSelect = GC.SceneCustomLevelSelect;
+          return;
+        }
+
+        uri = levelData.Value.RDZipUrl.AbsoluteUri;
+      }
+      catch (Exception exception)
+      {
+        Logger.LogError(exception);
+        throw;
+      }
+    }
+
     if (!TrySetStatusFlag(BusyStatus.ProcessingTransient))
     {
       Logger.LogWarning(
@@ -112,36 +167,6 @@ public class Plugin : BaseUnityPlugin
 
     try
     {
-      Logger.LogInfo($"[{nameof(Plugin)}] Playing {uri} transiently... (2P: {twoPlayer})");
-
-      using HttpClient client = new();
-      client.DefaultRequestHeaders.UserAgent.Add(
-        ProductInfoHeaderValue.Parse($"RhythmDoctor.CafeLink/{MyPluginInfo.PLUGIN_VERSION}")
-      );
-
-      if (uri.StartsWith("cafe://"))
-      {
-        string id = uri.Split('/').Last();
-        Logger.LogInfo($"[{nameof(Plugin)}] Resolving rdzip url of cafe scheme...");
-        LevelData? levelData = await Cafe.GetLevelData(id);
-
-        if (!levelData.HasValue)
-        {
-          Logger.LogError($"[{nameof(Plugin)}] Could not get level data (is level ID valid?)");
-          throw new ArgumentException("Could not get level data");
-        }
-
-        if (TryFindLevelWithHash(levelData.Value.RDMD5, out CustomLevelData matchedCustomLevelData))
-        {
-          Logger.LogWarning($"[{nameof(Plugin)}] Found already imported level, going to that instead");
-          scnBase.currentLevelSelect = GC.SceneCustomLevelSelect;
-          scnBaseExtensions.GoToLevelWithCustomLevelData(matchedCustomLevelData, twoPlayer);
-          return;
-        }
-
-        uri = levelData.Value.RDZipUrl.AbsoluteUri;
-      }
-
       Stream stream = null!;
       try
       {
@@ -202,14 +227,12 @@ public class Plugin : BaseUnityPlugin
         customLevelData.settings.artist,
         customLevelData.settings.song
       );
-      if (TryFindLevelWithHash(newHash, out CustomLevelData data))
+      if (TryGoToLevelWithHash(newHash, twoPlayer))
       {
         // Go to the already imported level instead.
         Logger.LogWarning($"[{nameof(Plugin)}] Found already imported level, going to that instead");
         _ = Task.Run(CleanupTransientPlay);
         scnBase.currentLevelSelect = GC.SceneCustomLevelSelect;
-        scnBaseExtensions.GoToLevelWithCustomLevelData(data, twoPlayer);
-        return;
       }
 
       // TODO: clean this up
@@ -312,15 +335,21 @@ public class Plugin : BaseUnityPlugin
     }
   }
 
-  internal static bool TryFindLevelWithHash(string hash, out CustomLevelData customLevelData)
+  internal static bool TryFindLevelWithHash(
+    string hash,
+    [NotNullWhen(true)] out CustomLevelData? customLevelData,
+    List<CustomLevelData>? levelsDataOverride = null
+  )
   {
-    customLevelData = LevelsData.Find(levelData => levelData.Hash == hash);
+    customLevelData = levelsDataOverride is null
+      ? LevelsData.Find(levelData => levelData.Hash == hash)
+      : levelsDataOverride.Find(levelData => levelData.Hash == hash);
     return customLevelData != null;
   }
 
   internal static bool TryGoToLevelWithHash(string hash, bool twoPlayer = false)
   {
-    if (!TryFindLevelWithHash(hash, out CustomLevelData customLevelData))
+    if (!TryFindLevelWithHash(hash, out CustomLevelData? customLevelData))
       return false;
 
     scnBaseExtensions.GoToLevelWithCustomLevelData(customLevelData, twoPlayer);

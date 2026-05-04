@@ -13,6 +13,11 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        configuration: ["BepInEx5", "BepInEx6"]
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4.2.2
@@ -26,12 +31,12 @@ jobs:
           key: ${{ runner.os }}-nuget
 
       - name: Build client
-        run: dotnet publish --configuration Debug --output build --verbosity normal
+        run: dotnet publish --configuration Debug-${{ matrix.configuration }} --output build --verbosity normal
 
       - name: Upload client plugin
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: "io.github.nonperforming.cafelink.dll"
+          name: "io.github.nonperforming.cafelink-${{ matrix.configuration }}.dll"
           path: |
             build/io.github.nonperforming.cafelink.dll
             build/io.github.nonperforming.cafelink.pdb

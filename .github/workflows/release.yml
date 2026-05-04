@@ -5,6 +5,11 @@ jobs:
   build:
     name: Build Release
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        configuration: ["BepInEx5", "BepInEx6"]
+
     steps:
       - name: Checkout
         uses: actions/checkout@v6.0.2
@@ -18,7 +23,7 @@ jobs:
           key: ${{ runner.os }}-nuget
 
       - name: Build client
-        run: dotnet publish RhythmDoctor.CafeLink --configuration Release --output build --verbosity normal
+        run: dotnet publish RhythmDoctor.CafeLink --configuration Release-${{ matrix.configuration }} --output build --verbosity normal
 
       # https://github.com/ebkr/r2modmanPlus/wiki/Structuring-your-Thunderstore-package#bepinex
       # TODO: Consider using tag name or pull version from .csproj
@@ -27,13 +32,14 @@ jobs:
           cd build
           mkdir --parents plugins/io.github.nonperforming.cafelink
           mv io.github.nonperforming.cafelink.dll plugins/io.github.nonperforming.cafelink
-          zip --recurse-paths ../io.github.nonperforming.cafelink.zip plugins
+          zip --recurse-paths ../io.github.nonperforming.cafelink-${{ matrix.configuration }}.zip plugins
 
       - name: Upload client plugin
         uses: actions/upload-artifact@v7.0.1
         with:
-          path: io.github.nonperforming.cafelink.zip
+          path: io.github.nonperforming.cafelink-${{ matrix.configuration }}.zip
           if-no-files-found: error
           archive: false # otherwise GitHub will zip the zip
+
 
         # When we get on Thunderstore, upload the artifact zip here.

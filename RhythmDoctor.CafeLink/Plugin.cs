@@ -9,6 +9,7 @@ namespace RhythmDoctor.CafeLink;
 
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 [BepInDependency(PulseLib.MyPluginInfo.PLUGIN_GUID, PulseLib.MyPluginInfo.PLUGIN_VERSION)]
+[BepInProcess("Rhythm Doctor.exe")]
 public class Plugin : BaseUnityPlugin
 {
   // ReSharper disable once NullableWarningSuppressionIsUsed

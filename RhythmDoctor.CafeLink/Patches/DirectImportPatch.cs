@@ -63,24 +63,16 @@ internal static class DirectImportPatch
     {
       if (__instance.errorsIS.levels[0].errorToken == RDString.Get("customLevelSelect.import.sameHashError"))
       {
-        // hash matched - find the level
-        CustomLevelData levelData = __instance.cls.levelsData.Find(levelData =>
-          levelData.Hash == __instance.errorsIS.levels[0].customLevel.Hash
-        );
-
-        scnBaseExtensions.GoToLevelWithCustomLevelData(levelData, _directPlayTwoPlayer);
+        // hash matched - find and go to the matched level
+        Plugin.Logger.LogWarning($"[{nameof(DirectImportPatch)}] Going to level that had same hash...");
+        Plugin.TryGoToLevelWithHash(__instance.errorsIS.levels[0].customLevel.Hash, _directPlayTwoPlayer);
       }
       // otherwise some other error occured when installing
     }
     else if (__instance.errorsIS.levels.Count == 0 && __instance.installedIS.levels.Count == 1)
     {
-      // TODO: , __instance.installedIS.levels[0].path
-      Plugin.Logger.LogWarning(__instance.installedIS.levels[0].customLevel.path);
-      Plugin.Logger.LogWarning(__instance.installedIS.levels[0].path);
-      scnBaseExtensions.GoToLevelWithCustomLevelData(
-        __instance.installedIS.levels[0].customLevel,
-        _directPlayTwoPlayer
-      );
+      Plugin.Logger.LogInfo($"[{nameof(DirectImportPatch)}] Going to just imported level...");
+      scnBaseExtensions.GoToLevelWithImportLevel(__instance.installedIS.levels[0], _directPlayTwoPlayer);
     }
     else
     {

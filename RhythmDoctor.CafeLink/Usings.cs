@@ -1,5 +1,8 @@
 global using BepInEx;
 global using BepInEx.Logging;
+#if BEPINEX6
+global using BepInEx.Unity.Mono;
+#endif
 
 global using PulseLib.Cafe;
 global using PulseLib.Cafe.Models;

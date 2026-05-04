@@ -1,4 +1,10 @@
 <Solution>
+  <Configurations>
+    <BuildType Name="Debug-BepInEx5" />
+    <BuildType Name="Debug-BepInEx6" />
+    <BuildType Name="Release-BepInEx5" />
+    <BuildType Name="Release-BepInEx6" />
+  </Configurations>
   <Project Path="RhythmDoctor.CafeLink/libs/Pulse/PulseLib.csproj" />
   <Project Path="RhythmDoctor.CafeLink/RhythmDoctor.CafeLink.csproj" />
 </Solution>

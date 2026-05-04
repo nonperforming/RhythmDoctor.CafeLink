@@ -14,6 +14,8 @@
     <RootNamespace>RhythmDoctor.CafeLink</RootNamespace>
     <Nullable>enable</Nullable>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <Configurations>Debug-BepInEx5;Release-BepInEx5;Debug-BepInEx6;Release-BepInEx6</Configurations>
+    <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
 
   <!-- MSB3277: Found conflicts between different versions of "System.IO.Compression" that could not be resolved. -->
@@ -23,6 +25,26 @@
       $(MSBuildWarningsAsMessages);MSB3277;HARMONIZE002
     </MSBuildWarningsAsMessages>
   </PropertyGroup>
+  
+  <!-- Configurations -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug-BepInEx5'">
+    <DefineConstants>$(DefineConstants);DEBUG;BEPINEX5</DefineConstants>
+    <DebugSymbols Condition="'$(DebugSymbols)' == ''">true</DebugSymbols>
+    <Optimize Condition="'$(Optimize)' == ''">false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug-BepInEx6'">
+    <DefineConstants>$(DefineConstants);DEBUG;BEPINEX6</DefineConstants>
+    <DebugSymbols Condition="'$(DebugSymbols)' == ''">true</DebugSymbols>
+    <Optimize Condition="'$(Optimize)' == ''">false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release-BepInEx5'">
+    <DefineConstants>$(DefineConstants);BEPINEX5</DefineConstants>
+    <Optimize Condition="'$(Optimize)' == ''">true</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release-BepInEx6'">
+    <DefineConstants>$(DefineConstants);BEPINEX6</DefineConstants>
+    <Optimize Condition="'$(Optimize)' == ''">true</Optimize>
+  </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="libs\**" />
@@ -30,34 +52,72 @@
     <None Remove="libs\**" />
   </ItemGroup>
 
+  <!-- BepInEx 5 -->
+  <ItemGroup Condition="$(DefineConstants.Contains('BEPINEX5'))">
+    <PackageReference
+      Include="BepInEx.Analyzers"
+      Version="1.*"
+      PrivateAssets="all"
+    />
+    <PackageReference Include="BepInEx.Core" Version="5.*" />
+    <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" />
+  </ItemGroup>
+  <!-- BepInEx 6 -->
+  <ItemGroup Condition="$(DefineConstants.Contains('BEPINEX6'))">
+    <PackageReference
+      Include="BepInEx.Analyzers"
+      Version="1.*"
+      PrivateAssets="all"
+    />
+    <PackageReference
+      Include="BepInEx.Unity.Mono"
+      Version="6.0.0-be.*"
+      IncludeAssets="compile"
+    />
+    <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" />
+  </ItemGroup>
+
   <ItemGroup>
-    <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
     <PackageReference
       Include="BepInEx.AssemblyPublicizer.MSBuild"
       Version="0.4.2"
       PrivateAssets="all"
     />
-    <PackageReference Include="BepInEx.Core" Version="5.*" />
-    <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" />
-    <PackageReference Include="NAudio" Version="2.3.0" />
-    <PackageReference Include="NAudio.Vorbis" Version="1.5.0" />
+    <PackageReference
+      Condition="$(DefineConstants.Contains('DEBUG'))"
+      Include="NAudio"
+      Version="2.3.0"
+    />
+    <PackageReference
+      Condition="$(DefineConstants.Contains('DEBUG'))"
+      Include="NAudio.Vorbis"
+      Version="1.5.0"
+    />
     <PackageReference Include="Nitrox.Discovery.MSBuild" Version="0.1.0">
       <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <IncludeAssets
+      >runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="PolySharp" Version="1.15.0">
       <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <IncludeAssets
+      >runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Roslynator.Analyzers" Version="*">
       <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <IncludeAssets
+      >runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Roslynator.CodeFixes" Version="*">
       <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <IncludeAssets
+      >runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="UnityEngine.Modules" Version="6000.3.10" IncludeAssets="compile" />
+    <PackageReference
+      Include="UnityEngine.Modules"
+      Version="6000.3.10"
+      IncludeAssets="compile"
+    />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
     <PackageReference
@@ -84,7 +144,9 @@
     </DiscoverGame>
     <PropertyGroup>
       <GameDir>$(GameDir)\Rhythm Doctor_Data\Managed\</GameDir>
-      <GameDir Condition="'$(GameDir)' == '\Rhythm Doctor_Data\Managed\'">libs\</GameDir>
+      <GameDir
+        Condition="'$(GameDir)' == '\Rhythm Doctor_Data\Managed\'"
+      >libs\</GameDir>
     </PropertyGroup>
     <Message Importance="high" Text="Using libraries at '$(GameDir)'" />
     <ItemGroup>

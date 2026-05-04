@@ -1,6 +1,6 @@
 ﻿namespace RhythmDoctor.CafeLink;
 
-internal class FakescnCLS : scnCLS
+internal class StubbedScnCLS : scnCLS
 {
   private new void Awake() { }
 

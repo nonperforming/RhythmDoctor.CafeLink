@@ -20,7 +20,6 @@ public class Plugin : BaseUnityPlugin
   private readonly Harmony _harmony = new(MyPluginInfo.PLUGIN_GUID);
   private Server.Server _server = null!;
 
-  private static List<CustomLevelData> _levelsData = new();
   private static List<CustomLevelData> LevelsData
   {
     get
@@ -28,11 +27,12 @@ public class Plugin : BaseUnityPlugin
       if (scnBase.instance is scnCLS cls)
       {
         // TODO: check performance
-        _levelsData = new List<CustomLevelData>(cls.levelsData);
+        field = new List<CustomLevelData>(cls.levelsData);
       }
-      return _levelsData;
+      return field;
     }
-  }
+    set;
+  } = null!;
 
   private void Awake()
   {
@@ -66,16 +66,24 @@ public class Plugin : BaseUnityPlugin
 
   private void Start()
   {
-    Logger.LogInfo($"[{nameof(Plugin)}] Building {nameof(_levelsData)}");
-    FakescnCLS fakeCLS = new();
-    fakeCLS.levelsData = new List<CustomLevelData>();
-    scnBase._instance = fakeCLS;
+    Logger.LogInfo($"[{nameof(Plugin)}] Building {nameof(LevelsData)}");
+    // DesktopLevelLoader adds to scnCLS.instance.levelsData
+    // fake a scnCLS instance so it doesn't error
+    StubbedScnCLS stubbedCLS = gameObject.AddComponent<StubbedScnCLS>();
+    stubbedCLS.levelsData = new List<CustomLevelData>();
+
+    // save the proper scnLogo so we can restore it later
+    scnBase properScn = scnBase._instance;
+    scnBase._instance = stubbedCLS;
     DesktopLevelLoader.InitializeCacheLevelsDict();
     DesktopLevelLoader.LoadLevelsPreviewFromPath(LevelValidation.CustomLevelsPath);
-    _levelsData = new List<CustomLevelData>(fakeCLS.levelsData);
-    scnBase._instance = null;
-    DestroyImmediate(fakeCLS);
-    Logger.LogInfo($"[{nameof(Plugin)}] Built {nameof(_levelsData)}");
+    LevelsData = new List<CustomLevelData>(stubbedCLS.levelsData);
+
+    // restore proper scnLogo and clean up
+    scnBase._instance = properScn;
+    DestroyImmediate(stubbedCLS);
+
+    Logger.LogInfo($"[{nameof(Plugin)}] Built {nameof(LevelsData)}");
   }
 
   internal static async Task PlayTransient(string uri, bool twoPlayer)

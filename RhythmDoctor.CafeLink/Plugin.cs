@@ -49,6 +49,8 @@ public class Plugin : BaseUnityPlugin
     Logger.LogInfo($"[{nameof(Plugin)}] Creating {nameof(Server.Server)}");
     _server = new Server.Server(2615); // ☕
 
+    Logger.LogInfo($"[{nameof(Plugin)}] Applying {nameof(DailyBlendWardOptionPatch)}");
+    _harmony.PatchAll(typeof(DailyBlendWardOptionPatch));
     Logger.LogInfo($"[{nameof(Plugin)}] Applying {nameof(DirectImportPatch)}");
     _harmony.PatchAll(typeof(DirectImportPatch));
     Logger.LogInfo($"[{nameof(Plugin)}] Applying {nameof(HandleCafeSchemePatch)}");
@@ -84,6 +86,12 @@ public class Plugin : BaseUnityPlugin
     // restore proper scnLogo and clean up
     scnBase._instance = properScn;
     DestroyImmediate(stubbedCLS);
+
+    // Injecting DAILY_BLEND_SELECT_SOUND into AudioManager.audioLib
+    // TODO
+    //Plugin.
+    //AudioManager.Instance.audioClipsLoaded++;
+    //AudioManager.Instance.audioLib.Add(DailyBlendWardOptionPatch.DAILY_BLEND_SELECT_SOUND, audioClip);
 
     Logger.LogInfo($"[{nameof(Plugin)}] Built {nameof(LevelsData)}");
   }

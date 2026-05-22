@@ -49,8 +49,13 @@ public class Plugin : BaseUnityPlugin
     Logger.LogInfo($"[{nameof(Plugin)}] Creating {nameof(Server.Server)}");
     _server = new Server.Server(2615); // ☕
 
-    Logger.LogInfo($"[{nameof(Plugin)}] Applying {nameof(DailyBlendWardOptionPatch)}");
-    _harmony.PatchAll(typeof(DailyBlendWardOptionPatch));
+    if (Configuration.ShowPlayDailyBlendWardOption.Value)
+    {
+      Logger.LogInfo($"[{nameof(Plugin)}] Applying {nameof(CopyDailyBlendResultsPatch)}");
+      _harmony.PatchAll(typeof(CopyDailyBlendResultsPatch));
+      Logger.LogInfo($"[{nameof(Plugin)}] Applying {nameof(DailyBlendWardOptionPatch)}");
+      _harmony.PatchAll(typeof(DailyBlendWardOptionPatch));
+    }
     Logger.LogInfo($"[{nameof(Plugin)}] Applying {nameof(DirectImportPatch)}");
     _harmony.PatchAll(typeof(DirectImportPatch));
     Logger.LogInfo($"[{nameof(Plugin)}] Applying {nameof(HandleCafeSchemePatch)}");

@@ -76,6 +76,7 @@ internal static class DailyBlendWardOptionPatch
       }
 
       Plugin.Logger.LogInfo($"[{nameof(DailyBlendWardOptionPatch)}] Got daily blend, going now!");
+      CopyDailyBlendResultsPatch.PlayingDailyBlend();
       // TODO: making two requests. why?
       DirectImportPatch.SetUriToPlay($"cafe://{data.Value.Blend.Id}", true); // TODO: 2P
     }

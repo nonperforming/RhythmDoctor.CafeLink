@@ -98,6 +98,7 @@
       <IncludeAssets
       >runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="NodaTime" Version="3.3.2" />
     <PackageReference Include="PolySharp" Version="1.15.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets
@@ -113,6 +114,7 @@
       <IncludeAssets
       >runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="TextCopy" Version="6.2.1" />
     <PackageReference
       Include="UnityEngine.Modules"
       Version="6000.3.10"

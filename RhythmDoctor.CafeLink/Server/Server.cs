@@ -122,6 +122,9 @@ internal class Server
 
     SendResponseWithDataAndGetReadyForNextRequest:
     IReadOnlyCollection<byte> data = response.Data;
+    // Must add CORS header, otherwise request will fail on browser:
+    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS/Errors/CORSMissingAllowOrigin
+    httpResponse.AddHeader("Access-Control-Allow-Origin", "https://rhythm.cafe");
     httpResponse.StatusCode = (int)response.StatusCode;
     httpResponse.ContentType = response.ContentType;
     httpResponse.ContentLength64 = data.Count;

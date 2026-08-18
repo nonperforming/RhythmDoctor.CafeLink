@@ -125,6 +125,8 @@ internal class Server
     // Must add CORS header, otherwise request will fail on browser:
     // https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS/Errors/CORSMissingAllowOrigin
     httpResponse.AddHeader("Access-Control-Allow-Origin", "https://rhythm.cafe");
+    // Force client to not cache anything
+    httpResponse.AddHeader("Cache-Control", "no-store");
     httpResponse.StatusCode = (int)response.StatusCode;
     httpResponse.ContentType = response.ContentType;
     httpResponse.ContentLength64 = data.Count;

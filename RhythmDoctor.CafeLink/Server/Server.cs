@@ -71,12 +71,19 @@ internal class Server
 
     if (!httpRequest.IsLocal && !Plugin.Configuration.AllowRemoteRequests.Value)
     {
+      Plugin.Logger.LogWarning($"[{nameof(Server)}] Blocked request from remote {httpRequest.RemoteEndPoint}");
       httpResponse.StatusCode = (int)HttpStatusCode.Forbidden;
       goto SendResponseAndGetReadyForNextRequest;
     }
 
-    if (httpRequest.AcceptTypes?.Contains("application/json") != true)
+    if (
+      httpRequest.AcceptTypes is null
+      || !(httpRequest.AcceptTypes.Contains("*/*") || httpRequest.AcceptTypes.Contains("application/json"))
+    )
     {
+      Plugin.Logger.LogWarning(
+        $"[{nameof(Server)}] Unacceptable Accept types: {string.Join(",", httpRequest.AcceptTypes ?? ["(null)"])}"
+      );
       httpResponse.StatusCode = (int)HttpStatusCode.NotAcceptable;
       goto SendResponseAndGetReadyForNextRequest;
     }
@@ -94,6 +101,7 @@ internal class Server
     IResponse response;
     if (string.IsNullOrEmpty(endpoint))
     {
+      Plugin.Logger.LogWarning($"[{nameof(Server)}] No endpoint specified in request.");
       response = new ErrorResponse(HttpStatusCode.BadRequest, "No endpoint specified.");
       goto SendResponseWithDataAndGetReadyForNextRequest;
     }
@@ -108,11 +116,15 @@ internal class Server
     }
     else
     {
+      Plugin.Logger.LogWarning($"[{nameof(Server)}] Unknown endpoint '{endpoint}'.");
       response = new ErrorResponse(HttpStatusCode.NotFound, "Unknown endpoint.");
     }
 
     SendResponseWithDataAndGetReadyForNextRequest:
     IReadOnlyCollection<byte> data = response.Data;
+    // Must add CORS header, otherwise request will fail on browser:
+    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS/Errors/CORSMissingAllowOrigin
+    httpResponse.AddHeader("Access-Control-Allow-Origin", "https://rhythm.cafe");
     httpResponse.StatusCode = (int)response.StatusCode;
     httpResponse.ContentType = response.ContentType;
     httpResponse.ContentLength64 = data.Count;

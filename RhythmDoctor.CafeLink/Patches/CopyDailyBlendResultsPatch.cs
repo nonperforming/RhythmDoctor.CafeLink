@@ -8,21 +8,29 @@ namespace RhythmDoctor.CafeLink.Patches;
 [HarmonyPatch(typeof(Rankscreen))]
 internal static class CopyDailyBlendResultsPatch
 {
+  private static int _showAndSaveRankProgress = 0;
   private static bool _playingDailyBlend;
 
   [HarmonyPatch(nameof(Rankscreen.ShowAndSaveRank))]
   [HarmonyPostfix]
   private static void CopyBlendResultPatch(Rankscreen __instance)
   {
+    _showAndSaveRankProgress++;
+
+    // third ShowAndSaveRank will show exit button,
+    // fourth will exit so we need to capture screenshot on third run.
+    if (_showAndSaveRankProgress < 3)
+      return;
+
     if (!_playingDailyBlend)
       return;
 
     Plugin.Logger.LogInfo($"[{nameof(CopyDailyBlendResultsPatch)}] Completed Daily Blend level");
-    _playingDailyBlend = false;
+    NotPlayingDailyBlendAnymorePatch();
 
     // Check if we've already cleared the Daily Blend for the day
-    // Daily Blend refreshes at 4AM GMT. GMT is UTC+0, so we can just use that.
-    LocalDate unixEpochDate = new LocalDate(1970, 1, 1);
+    // Daily Blend refreshes at 4AM GMT. GMT is equivalent UTC+0, so we can just use that.
+    LocalDate unixEpochDate = new(1970, 1, 1);
     LocalDate currentBlendDate = SystemClock.Instance.GetCurrentInstant().InUtc().Minus(Duration.FromHours(4)).Date; // current day at 4AM.
     int currentDay = Period.DaysBetween(unixEpochDate, currentBlendDate);
     Plugin.Logger.LogInfo(
@@ -71,19 +79,30 @@ internal static class CopyDailyBlendResultsPatch
     {
       string rank = __instance.game.currentLevel.GetRankFromMistakes().ToString();
       float mistakes = __instance.game.mistakesManager.mistakes;
-      _ = SetTextToCopy(rank, mistakes, streakAlive);
+      _ = SetTextToCopy(rank, mistakes, streakAlive, daysSinceLastCompletion);
     }
     if (Plugin.Configuration.ScreenshotDailyBlendResult.Value)
       SaveScreenshot();
   }
 
-  private static async Task SetTextToCopy(string rank, float mistakes, bool streakAlive)
+  [HarmonyPatch(typeof(scnBase), nameof(scnBase.GoToLevelSelect))]
+  [HarmonyPostfix]
+  private static void NotPlayingDailyBlendAnymorePatch()
   {
-    static string GetStreak(bool streakAlive) =>
-      streakAlive ? $"🔥{Plugin.Configuration.DailyBlendStreak.Value}" : "🧯1";
+    Plugin.Logger.LogInfo($"[{nameof(CopyDailyBlendResultsPatch)}] Not playing daily blend anymore");
+    _showAndSaveRankProgress = 0;
+    _playingDailyBlend = false;
+  }
+
+  private static async Task SetTextToCopy(string rank, float mistakes, bool streakAlive, int daysSinceLastCompletion)
+  {
+    static string GetStreak(bool streakAlive, int daysSinceLastCompletion) =>
+      streakAlive
+        ? $"🔥{Plugin.Configuration.DailyBlendStreak.Value}"
+        : $"🧯1 (last played {daysSinceLastCompletion} days ago)";
 
     string text =
-      $"#{Plugin.Configuration.DailyBlendNumber.Value} / {GetStreak(streakAlive)}\n-# {rank} rank ({mistakes} mistakes)";
+      $"#{Plugin.Configuration.DailyBlendNumber.Value} / {GetStreak(streakAlive, daysSinceLastCompletion)}\n-# {rank} rank ({mistakes} mistakes)";
     Plugin.Logger.LogInfo($"[{nameof(CopyDailyBlendResultsPatch)}] Copying '{text}'");
 
     await ClipboardService.SetTextAsync(text);

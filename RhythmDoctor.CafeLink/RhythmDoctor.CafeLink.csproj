@@ -173,6 +173,12 @@
       <Reference Include="UnityEngine.UI">
         <HintPath>$(GameDir)\UnityEngine.UI.dll</HintPath>
       </Reference>
+
+      <!-- Pull System.Text.Encodings.Web from game, otherwise from NuGet -->
+      <Reference Condition="'$(GameDir)' != 'libs\'" Include="System.Text.Encodings.Web">
+        <HintPath>$(GameDir)\System.Text.Encodings.Web.dll</HintPath>
+      </Reference>
+      <PackageReference Condition="'$(GameDir)' == 'libs\'" Include="System.Text.Encodings.Web" Version="6.0.0" />
     </ItemGroup>
   </Target>
 </Project>

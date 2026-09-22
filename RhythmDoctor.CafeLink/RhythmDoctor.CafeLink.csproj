@@ -118,6 +118,7 @@
       Version="6000.3.10"
       IncludeAssets="compile"
     />
+    <PackageReference Include="System.Text.Encodings.Web" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
     <PackageReference

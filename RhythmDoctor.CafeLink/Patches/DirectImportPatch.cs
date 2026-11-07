@@ -12,6 +12,8 @@ internal static class DirectImportPatch
   private static List<string> _urisToImport = [];
   private static DirectPlayStatus _directPlayStatus = DirectPlayStatus.None;
   private static bool _directPlayTwoPlayer = false;
+  private static bool _playingDirect = false;
+  private static string _hash = "";
 
   [HarmonyPatch(typeof(scnCLS), nameof(scnCLS.LateUpdate))]
   [HarmonyPostfix]
@@ -65,6 +67,10 @@ internal static class DirectImportPatch
       {
         // hash matched - find and go to the matched level
         Plugin.Logger.LogWarning($"[{nameof(DirectImportPatch)}] Going to level that had same hash...");
+
+        _playingDirect = true;
+        _hash = __instance.errorsIS.levels[0].customLevel.Hash;
+
         Plugin.TryGoToLevelWithHash(__instance.errorsIS.levels[0].customLevel.Hash, _directPlayTwoPlayer);
       }
       // otherwise some other error occured when installing
@@ -72,6 +78,10 @@ internal static class DirectImportPatch
     else if (__instance.errorsIS.levels.Count == 0 && __instance.installedIS.levels.Count == 1)
     {
       Plugin.Logger.LogInfo($"[{nameof(DirectImportPatch)}] Going to just imported level...");
+
+      _playingDirect = true;
+      _hash = __instance.installedIS.levels[0].customLevel.Hash;
+
       scnBaseExtensions.GoToLevelWithImportLevel(__instance.installedIS.levels[0], _directPlayTwoPlayer);
     }
     else
@@ -90,6 +100,26 @@ internal static class DirectImportPatch
       return;
 
     Task.Run(Plugin.CleanupTransientPlay);
+  }
+
+  // FIXME: Fix this **properly**!
+  [HarmonyPatch(typeof(Persistence), nameof(Persistence.GetCustomLevelRank))]
+  [HarmonyPatch(typeof(Persistence), nameof(Persistence.SetCustomLevelRank))]
+  [HarmonyPatch(typeof(Persistence), nameof(Persistence.GetCustomLevelKey))]
+  [HarmonyPrefix]
+  private static void FixHashHackPatch(ref string hash)
+  {
+    if (_playingDirect)
+      hash = _hash;
+  }
+
+  [HarmonyPatch(typeof(Persistence), nameof(Persistence.SetCustomLevelRank))]
+  [HarmonyPatch(typeof(scnGame), nameof(scnGame.Quit))]
+  [HarmonyPostfix]
+  private static void FixHashHackCleanupPatch()
+  {
+    _playingDirect = false;
+    _hash = "";
   }
 
   internal static void AddUrisToImport(params IEnumerable<string> uris)
